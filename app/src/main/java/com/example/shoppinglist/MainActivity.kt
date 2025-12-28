@@ -31,35 +31,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             ShoppingListTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    var sItems by remember { mutableStateOf(listOf<ShoppingItem>()) }
-                    Column(
-                        modifier = Modifier
-                        .padding(innerPadding)
-                        .fillMaxSize(),
-                        verticalArrangement = Arrangement.Center, // start di tengah kiri
-//                        horizontalAlignment = Alignment.CenterHorizontally // start di tengah atas
-                    ) {
-//                        Text("Halo")
-//                        Text("Halo")
-//                        Text("Halo")
-                        Button(onClick = {},
-                            modifier = Modifier.align(Alignment.CenterHorizontally
-                            ))
-                        {
-                            Text("Add item")
-                        }
+                    ShoppingListApp(modifier = Modifier.padding(innerPadding))
 
-                        LazyColumn(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(16.dp)
-                        ) {
-                            items(sItems){
-
-                            }
-                        }
-
-                    }
                 }
             }
         }
@@ -67,8 +40,3 @@ class MainActivity : ComponentActivity() {
 
     }
 }
-data class ShoppingItem(
-    val id:Int,
-    var name: String,
-    var quantity: Int,
-    var isEditting: Boolean = false){}
