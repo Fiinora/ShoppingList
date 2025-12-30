@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -87,7 +89,30 @@ fun ShoppingListApp(modifier: Modifier = Modifier){
                 .padding(16.dp)
         ) {
             items(sItems){
-                ShoppingListItem(it, {}, {})
+                item ->
+                if (item.isEditting){
+                    ShoppingItemEditor(item = item, onEditComplete = {
+                        editedName, editetQty ->
+                        sItems = sItems.map{it.copy(isEditting = false)}
+                        val editedItem = sItems.find { it.id == item.id }// nyari, mana bagian atau id yang mau diubah
+                        editedItem?.let {
+                            it.name = editedName
+                            it.quantity = editetQty
+                        }
+                    })
+                }else{
+                    ShoppingListItem(item = item , onEditClick = {
+                        //ngeloop list di sitems,
+                        sItems = sItems.map { it.copy(isEditting = it.id == item.id) }
+                    },
+                        onDeleteClick = {
+                            sItems = sItems - item
+                        })
+
+
+
+                }
+
             }
         }
 
@@ -152,6 +177,43 @@ fun ShoppingListApp(modifier: Modifier = Modifier){
         }
     }
 
+
+@Composable
+fun ShoppingItemEditor(
+    item: ShoppingItem,
+    onEditComplete: (String, Int) -> Unit
+){
+    var editedName by remember { mutableStateOf(item.name) }
+    var editedQty by remember { mutableStateOf(item.quantity.toString()) }
+    var isEditting by remember { mutableStateOf(item.isEditting) }
+
+    Row(
+        modifier = Modifier.fillMaxWidth().background(Color.Gray).padding(8.dp),
+        horizontalArrangement = Arrangement.SpaceEvenly
+    ) {
+        Column {
+            OutlinedTextField(
+                value = editedName,
+                onValueChange = {editedName = it},
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth()
+            )
+            OutlinedTextField(
+                value = editedQty,
+                onValueChange = {editedQty = it},
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+
+        Button(onClick = {
+            isEditting = false
+            onEditComplete(editedName, editedQty.toIntOrNull() ?: 1)
+        }) {
+            Text("Save")
+        }
+    }
+}
 
 @Composable
 fun ShoppingListItem(
